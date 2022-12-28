@@ -2,25 +2,23 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../prisma/client";
 import { generateJwtToken, verifyJwtToken } from "../../utils/jwtTokenHelpers"
 import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { shopItem } from '../../types/shopItem';
 
 //Use the newly create verifyJwtToken helper instead of try catching everywhere
 
 type userInputType = {
-  accessToken: string,
-  category: string,
-  name: string,
-  description: string
+  accessToken: string;
+  category: string;
+  name: string;
+  imageUrl: string;
+  price: string;
+  description: string;
 }
 
 type createItemResponse = {
-  success: boolean,
-  message: string | unknown,
-  data?: {
-    id: string,
-    name: string,
-    description: string,
-    category: string
-  }
+  success: boolean;
+  message: string | unknown;
+  data?: shopItem
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<createItemResponse>) {
@@ -68,6 +66,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     data: {
       name: userInput.name,
       description: userInput.description,
+      imageUrl: userInput.imageUrl,
+      price: userInput.price,
       categoryReference: {
         connect: {
           id: categoryId.id
@@ -91,6 +91,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       id: item.id,
       name: item.name,
       description: item.description,
+      price: item.price,
+      imageUrl: item.imageUrl,
       category: item?.categoryReference?.name
     }
   }) :

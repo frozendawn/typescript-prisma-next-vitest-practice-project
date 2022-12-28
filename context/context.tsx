@@ -4,7 +4,16 @@ import jwt_decode from "jwt-decode";
 type userType = {
   id: string,
   email: string,
-  accessToken: string
+  accessToken: string,
+  role: string,
+  username: string
+}
+
+export type accessTokenData = {
+  id: string;
+  email: string;
+  role: string;
+  username: string;
 }
 
 export interface userContextInterface {
@@ -40,12 +49,19 @@ export const UserContextProvider:React.FC<Props> = ({ children }) => {
     })
 
     const data = await response.json()
+    console.log("DATA: ", data)
 
-    const tokenData = jwt_decode(data.accessToken)
-    console.log("tokenData", tokenData)
+    const tokenData: accessTokenData = jwt_decode(data.accessToken)
 
-    if (data) {
-      setUser(data)
+    if (data && tokenData) {
+      const user = {
+        accessToken: data.accessToken,
+        id: tokenData.id,
+        email: tokenData.email,
+        role: tokenData.role,
+        username: tokenData.username
+      }
+      setUser(user)
     }
   }
 
